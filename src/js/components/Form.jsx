@@ -2,14 +2,32 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import uuidv1 from "uuid";
 import { addArticle } from "../actions/index";
+
+function mapStateToProps(state) {
+  
+  console.log("----- js/components/List - function mapStateToProps - ", state)
+  
+  return { myArticles: state.articles };
+};
+
 function mapDispatchToProps(dispatch) {
+  
+  console.log("----- js/components/Form - function mapDispatchToProps - ", dispatch)
+
   return {
-    addArticle: article => dispatch(addArticle(article))
+    addArticle: article => {
+      console.log("----- js/components/Form - function mapDispatchToProps - addArticle - ", article)
+      dispatch(addArticle(article))
+    }
   };
 }
+
 class ConnectedForm extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    
+    console.log(">>>>>>> ConnectedForm - constructor - props : ", this.props)
+    
     this.state = {
       title: ""
     };
@@ -20,6 +38,9 @@ class ConnectedForm extends Component {
     this.setState({ [event.target.id]: event.target.value });
   }
   handleSubmit(event) {
+    
+    console.log(">>>>>>> ConnectedForm - handleSubmit - props : ", this.props)
+        
     event.preventDefault();
     const { title } = this.state;
     const id = uuidv1();
@@ -27,6 +48,9 @@ class ConnectedForm extends Component {
     this.setState({ title: "" });
   }
   render() {
+    
+    console.log(">>>>>>> ConnectedForm - render - props : ", this.props)
+        
     const { title } = this.state;
     return (
       <form onSubmit={this.handleSubmit}>
@@ -40,6 +64,15 @@ class ConnectedForm extends Component {
             onChange={this.handleChange}
           />
         </div>
+        <hr/>
+        <ul className="list-group list-group-flush">
+          {this.props.myArticles.map(el => (
+            <li className="list-group-item" key={el.id}>
+              {el.title}
+            </li>
+          ))}
+        </ul>
+        <hr/>
         <button type="submit" className="btn btn-success btn-lg">
           SAVE
         </button>
@@ -47,5 +80,5 @@ class ConnectedForm extends Component {
     );
   }
 }
-const Form = connect(null, mapDispatchToProps)(ConnectedForm);
+const Form = connect(mapStateToProps, mapDispatchToProps)(ConnectedForm);
 export default Form;
